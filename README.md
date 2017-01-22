@@ -8,3 +8,4 @@
  - ClownFish.Log.PerformanceAnalyzer，分析ClownFish.Log记录的性能日志
  - ClownFish.PreheatWebSite，网站预热工具
  - ClownFish.WebApp.Profiler，与ClownFish.FiddlerPulgin配对的服务端模块  
+ - ClownFish.CommonLibrary，用于存放一些零散的工具代码  
