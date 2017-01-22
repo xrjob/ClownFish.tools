@@ -82,7 +82,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="SessionExtensions.cs" />
-    <Compile Include="SimpleHttpClient.cs" />
     <Compile Include="SomeExtenstions.cs" />
   </ItemGroup>
   <ItemGroup>

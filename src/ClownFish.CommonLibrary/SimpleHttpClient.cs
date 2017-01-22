@@ -5,12 +5,57 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Script.Serialization;
 
-namespace ClownFish.FiddlerPulgin
+namespace ClownFish.CommonLibrary
 {
+	internal class DemoCodeSimpleHttpClient
+	{
+		public void Demo1()
+		{
+			// 1、（必需）实例化SimpleHttpClient对象
+			string url = "http://www.ab.com/aaa.aspx";
+			using( SimpleHttpClient httpClient = new SimpleHttpClient(url) ) {
+
+				// 2、（可选步骤）指定提交数据，用于POST场景
+
+				// 以下4种方法都可以设计提交数据（一次只能使用一种！）
+				byte[] bb = File.ReadAllBytes(@"c:\\aa.txt");
+				httpClient.SetRequestData(bb);
+
+				// or
+				httpClient.SetRequestData("aaaaaaaaaaaaaa");
+
+				// or
+				var data = new { a = 1, b = 2, c = "xxx" };
+				httpClient.SetRequestData(data);
+
+				// or
+				var list = new List<string>();
+				// 省略赋值过程
+				httpClient.SetRequestJsonData(list);
+
+				// 3、（可选步骤）可以设置其它请求头
+				httpClient.Request.Headers.Add("aa", "bb");
+
+				// 4、（必需）发送请求，获取服务端响应
+				HttpWebResponse response = httpClient.GetResponse();
+
+				// 5、（可选步骤）获取响应头
+				string xx = response.Headers["cc"];
+
+				// 6、（必需）获取调用结果
+				string result = httpClient.GetResult<string>();
+			}
+		}
+	}
+
+
 	/// <summary>
 	/// 一个简单的HTTP客户端
 	/// 说明：ClownFish.Web.Client.HttpClient 实现了更完整的HTTP客户端功能。
@@ -44,6 +89,11 @@ namespace ClownFish.FiddlerPulgin
 		private HttpWebResponse _response;
 
 		/// <summary>
+		/// 需要提交的数据
+		/// </summary>
+		private byte[] _postData;
+
+		/// <summary>
 		/// HttpWebRequest的实例
 		/// </summary>
 		public HttpWebRequest Request { get { return _request; } }
@@ -69,6 +119,21 @@ namespace ClownFish.FiddlerPulgin
 
 
 		/// <summary>
+		/// 写入要提交的数据到请求体中
+		/// </summary>
+		/// <param name="postData"></param>
+		public void SetRequestData(byte[] postData)
+		{
+			if( postData == null )
+				throw new ArgumentNullException("postData");
+
+			if( _postData != null )
+				throw new InvalidOperationException("不允许重复调用SetRequestData方法。");
+
+			_postData = postData;
+		}
+
+		/// <summary>
 		/// 写入要提交的数据到请求体中（同步版本）
 		/// </summary>
 		/// <param name="postData"></param>
@@ -77,28 +142,77 @@ namespace ClownFish.FiddlerPulgin
 			if( string.IsNullOrEmpty(postData) )
 				return;
 
+			if( _postData != null )
+				throw new InvalidOperationException("不允许重复调用SetRequestData方法。");
 
-			using( BinaryWriter bw = new BinaryWriter(_request.GetRequestStream()) ) {
-				// 默认就用UTF-8编码发送数据
-				bw.Write(Encoding.UTF8.GetBytes(postData));
-			}
+			// 默认就用UTF-8编码发送数据
+			_postData = Encoding.UTF8.GetBytes(postData);
 		}
 
 		/// <summary>
-		/// 写入要提交的数据到请求体中（异步版本）
+		/// 写入要提交的数据到请求体中
 		/// </summary>
 		/// <param name="postData"></param>
-		public async Task SetRequestDataAsync(string postData)
+		public void SetRequestData(object postData)
 		{
-			if( string.IsNullOrEmpty(postData) )
-				return;
+			if( postData == null )
+				throw new ArgumentNullException("postData");
 
+			if( _postData != null )
+				throw new InvalidOperationException("不允许重复调用SetRequestData方法。");
 
-			using( BinaryWriter bw = new BinaryWriter(await _request.GetRequestStreamAsync()) ) {
-				// 默认就用UTF-8编码发送数据
-				bw.Write(Encoding.UTF8.GetBytes(postData));
+			StringBuilder sb = new StringBuilder();
+			PropertyInfo[] properties = postData.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
+			foreach( PropertyInfo p in properties ) {
+				object value = p.GetValue(postData);
+				string str = value == null ? string.Empty : value.ToString();
+
+				if( sb.Length > 0 )
+					sb.Append("&");
+
+				sb.AppendFormat("{0}={1}",
+					HttpUtility.UrlEncode(p.Name),
+					HttpUtility.UrlEncode(str));
 			}
+
+			this.SetRequestData(sb.ToString());
 		}
+
+
+		/// <summary>
+		/// 写入要提交的数据到请求体中
+		/// </summary>
+		/// <param name="postData"></param>
+		public void SetRequestJsonData(object postData)
+		{
+			if( postData == null )
+				throw new ArgumentNullException("postData");
+
+			if( _postData != null )
+				throw new InvalidOperationException("不允许重复调用SetRequestData方法。");
+
+			string json = ToJsonString(postData);
+
+			this.SetRequestData(json);
+			_request.ContentType = "application/json; charset=utf-8";
+		}
+
+
+		/// <summary>
+		/// 将一个对象序列化成JSON字符串。 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		private string ToJsonString(object obj)
+		{
+			//目前直接调用了System.Web.Extensions中的JavaScriptSerializer，
+			//如果以后要换成其它的JSON序列化，可以重新实现这个方法。
+
+			JavaScriptSerializer jss = new JavaScriptSerializer();
+			return jss.Serialize(obj);
+		}
+
 
 		/// <summary>
 		/// 获取服务端的响应（同步版本），
@@ -109,6 +223,15 @@ namespace ClownFish.FiddlerPulgin
 		{
 			if( _response != null )
 				throw new InvalidOperationException("不允许重复调用GetResponse()方法");
+
+
+			if( _postData != null && _request.Method == "GET" ) {
+				_request.Method = "POST";
+
+				using( BinaryWriter bw = new BinaryWriter(_request.GetRequestStream()) ) {
+					bw.Write(_postData);
+				}
+			}
 
 			try {
 				_response = (HttpWebResponse)_request.GetResponse();
@@ -128,6 +251,14 @@ namespace ClownFish.FiddlerPulgin
 		{
 			if( _response != null )
 				throw new InvalidOperationException("不允许重复调用GetResponse()方法");
+
+			if( _postData != null ) {
+				_request.Method = "POST";
+
+				using( BinaryWriter bw = new BinaryWriter(await _request.GetRequestStreamAsync()) ) {
+					bw.Write(_postData);
+				}
+			}
 
 			try {
 				_response = (HttpWebResponse)await _request.GetResponseAsync();

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClownFish.Data.Tools", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClownFish.WebApp.Profiler", "src\ClownFish.WebApp.Profiler\ClownFish.WebApp.Profiler.csproj", "{8F2830DF-721A-4F59-9A82-0A560E4248A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClownFish.CommonLibrary", "src\ClownFish.CommonLibrary\ClownFish.CommonLibrary.csproj", "{0ED64D3E-9204-42AC-857E-33C107BD588D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8F2830DF-721A-4F59-9A82-0A560E4248A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F2830DF-721A-4F59-9A82-0A560E4248A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F2830DF-721A-4F59-9A82-0A560E4248A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0ED64D3E-9204-42AC-857E-33C107BD588D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ED64D3E-9204-42AC-857E-33C107BD588D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ED64D3E-9204-42AC-857E-33C107BD588D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0ED64D3E-9204-42AC-857E-33C107BD588D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
