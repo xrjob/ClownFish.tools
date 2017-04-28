@@ -57,7 +57,7 @@ namespace ClownFish.CommonLibrary
 
 
 	/// <summary>
-	/// 一个简单的HTTP客户端
+	/// 一个简单的HTTP客户端（没有其它依赖，使用时只需要这个文件）
 	/// 说明：ClownFish.Web.Client.HttpClient 实现了更完整的HTTP客户端功能。
 	/// </summary>
 	public sealed class SimpleHttpClient : IDisposable
@@ -236,7 +236,7 @@ namespace ClownFish.CommonLibrary
 			try {
 				_response = (HttpWebResponse)_request.GetResponse();
 			}
-			catch( WebException wex ) {
+			catch( WebException wex ) {// 先捕获这个异常，然后转换成HttpInvokeException异常重新抛出，目的是为了让异常的Message的可读性更好
 				throw CreateHttpException(wex);
 			}
 			return _response;
@@ -263,7 +263,7 @@ namespace ClownFish.CommonLibrary
 			try {
 				_response = (HttpWebResponse)await _request.GetResponseAsync();
 			}
-			catch( WebException wex ) {
+			catch( WebException wex ) {// 先捕获这个异常，然后转换成HttpInvokeException异常重新抛出，目的是为了让异常的Message的可读性更好
 				throw CreateHttpException(wex);
 			}
 			return _response;
@@ -410,6 +410,7 @@ namespace ClownFish.CommonLibrary
 	/// <summary>
 	/// 表示一个网络调用异常
 	/// </summary>
+	[Serializable]
 	public sealed class HttpInvokeException : System.Exception
 	{
 		/// <summary>

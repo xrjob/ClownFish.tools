@@ -1,0 +1,14 @@
+﻿使用说明
+http://note.youdao.com/noteshare?id=fc45183a805fdc7d3087ed42863b8568&sub=76EF6838A96C40D2A83229660E5AEB58
+
+
+
+如何创建预热脚本文件
+http://note.youdao.com/noteshare?id=8b87481977325fe64701fadd98db5e65&sub=09D70CF692DC4B53966125FBBCAC8638
+
+
+
+
+设置PreheatWebSite的定时任务
+http://note.youdao.com/noteshare?id=0ff1ea9886e70a72f58fe2ab2a36a073&sub=F3BD2D8899A742F081E3893CF450B93A
+

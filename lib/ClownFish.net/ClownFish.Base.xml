@@ -4,6 +4,143 @@
         <name>ClownFish.Base</name>
     </assembly>
     <members>
+        <member name="T:ClownFish.Base.Base64Extensions">
+            <summary>
+            BASE64编码的工具类
+            </summary>
+        </member>
+        <member name="M:ClownFish.Base.Base64Extensions.ToBase64(System.String)">
+            <summary>
+            将字符串做BASE64编码
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.Base64Extensions.FromBase64(System.String)">
+            <summary>
+            从BASE64文本中还原结果
+            </summary>
+            <param name="base64"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ClownFish.Base.CryptoHelper">
+            <summary>
+            “对称加密算法”的封装工具类
+            </summary>
+        </member>
+        <member name="M:ClownFish.Base.CryptoHelper.Encrypt(System.String,System.Security.Cryptography.SymmetricAlgorithm)">
+            <summary>
+            加密字符串
+            </summary>
+            <param name="text">等待加密的文本</param>
+            <param name="sa">“对称加密算法”实例，要求已设置过KEY和IV</param>
+            <returns>返回Base64编码的结果</returns>
+        </member>
+        <member name="M:ClownFish.Base.CryptoHelper.Encrypt(System.Byte[],System.Security.Cryptography.SymmetricAlgorithm)">
+            <summary>
+            加密字节数组
+            </summary>
+            <param name="input"></param>
+            <param name="sa">“对称加密算法”实例，要求已设置过KEY和IV</param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.CryptoHelper.Decrypt(System.String,System.Security.Cryptography.SymmetricAlgorithm)">
+            <summary>
+            解密一个以Base64编码的加密字符串
+            </summary>
+            <param name="base64">等待解密的BASE64文本</param>
+            <param name="sa">“对称加密算法”实例，要求已设置过KEY和IV</param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.CryptoHelper.Decrypt(System.Byte[],System.Security.Cryptography.SymmetricAlgorithm)">
+            <summary>
+            解密字节数组
+            </summary>
+            <param name="input"></param>
+            <param name="sa">“对称加密算法”实例，要求已设置过KEY和IV</param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.CryptoHelper.SetKeyIV(System.Security.Cryptography.SymmetricAlgorithm,System.String)">
+            <summary>
+            根据指定的密码，设置“加密算法”的KEY和IV
+            </summary>
+            <param name="sa">“对称加密算法”实例</param>
+            <param name="password">加密或解密的密码</param>
+        </member>
+        <member name="T:ClownFish.Base.TripleDESHelper">
+            <summary>
+            对TripleDES封装的工具类
+            </summary>
+        </member>
+        <member name="M:ClownFish.Base.TripleDESHelper.Encrypt(System.String,System.String)">
+            <summary>
+            使用TripleDES加密字符串
+            </summary>
+            <param name="text"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.TripleDESHelper.Encrypt(System.Byte[],System.String)">
+            <summary>
+            使用TripleDES加密字节数组
+            </summary>
+            <param name="input"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.TripleDESHelper.Decrypt(System.String,System.String)">
+            <summary>
+            使用TripleDES解密一个以Base64编码的加密字符串
+            </summary>
+            <param name="base64"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.TripleDESHelper.Decrypt(System.Byte[],System.String)">
+            <summary>
+            使用TripleDES解密字节数组
+            </summary>
+            <param name="input"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ClownFish.Base.AesHelper">
+            <summary>
+            对AES算法封装的工具类
+            </summary>
+        </member>
+        <member name="M:ClownFish.Base.AesHelper.Encrypt(System.String,System.String)">
+            <summary>
+            使用AES算法加密字符串
+            </summary>
+            <param name="text"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.AesHelper.Encrypt(System.Byte[],System.String)">
+            <summary>
+            使用AES算法加密字节数组
+            </summary>
+            <param name="input"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.AesHelper.Decrypt(System.String,System.String)">
+            <summary>
+            使用AES算法解密一个以Base64编码的加密字符串
+            </summary>
+            <param name="base64"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.AesHelper.Decrypt(System.Byte[],System.String)">
+            <summary>
+            使用AES算法解密字节数组
+            </summary>
+            <param name="input"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
         <member name="T:ClownFish.Base.DataTimeExtensions">
             <summary>
             包含DataTime类型相关的扩展方法
@@ -54,6 +191,41 @@
             解压缩一个二进制数组
             </summary>
             <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ClownFish.Base.HashHelper">
+            <summary>
+            封装常用的HASH算法
+            </summary>
+        </member>
+        <member name="M:ClownFish.Base.HashHelper.Sha1(System.String)">
+            <summary>
+            计算字符串的 SHA1 签名
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.HashHelper.Sha1(System.String,System.Text.Encoding)">
+            <summary>
+            计算字符串的 SHA1 签名
+            </summary>
+            <param name="text"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.HashHelper.Md5(System.String)">
+            <summary>
+            计算字符串的 MD5 签名
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.HashHelper.Md5(System.String,System.Text.Encoding)">
+            <summary>
+            计算字符串的 MD5 签名
+            </summary>
+            <param name="text"></param>
+            <param name="encoding"></param>
             <returns></returns>
         </member>
         <member name="T:ClownFish.Base.LazyObject`1">
@@ -107,6 +279,60 @@
             <summary>
             ToString
             </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ClownFish.Base.RsaHelper">
+            <summary>
+            RSA算法（签名/验证签名/加密/解密）的封装工具类
+            </summary>
+        </member>
+        <member name="M:ClownFish.Base.RsaHelper.Sign(System.Byte[],System.String)">
+            <summary>
+            用指定的证书名称对数据做签名
+            </summary>
+            <param name="data"></param>
+            <param name="certName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.RsaHelper.Verify(System.Byte[],System.String,System.String)">
+            <summary>
+            验证RSA签名
+            </summary>
+            <param name="data"></param>
+            <param name="signature"></param>
+            <param name="publicKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.RsaHelper.Verify(System.Byte[],System.String,System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            验证RSA签名
+            </summary>
+            <param name="data"></param>
+            <param name="signature"></param>
+            <param name="cert"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.RsaHelper.FindCertificate(System.String)">
+            <summary>
+            根据证书名查找X509证书，优先查找LocalMachine存储区域，如果失败则再查找CurrentUser
+            </summary>
+            <param name="certName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.RsaHelper.Encrypt(System.Byte[],System.String)">
+            <summary>
+            RSA数据加密
+            </summary>
+            <param name="data">二进制数据</param>
+            <param name="certName">证书名称</param>
+            <returns>加密后的数据</returns>
+        </member>
+        <member name="M:ClownFish.Base.RsaHelper.Decrypt(System.Byte[],System.String)">
+            <summary>
+            用X509证书解密数据
+            </summary>
+            <param name="data"></param>
+            <param name="certName"></param>
             <returns></returns>
         </member>
         <member name="T:ClownFish.Base.StringExtensions">
@@ -181,6 +407,13 @@
             <param name="length">要保留的长度</param>
             <returns></returns>
         </member>
+        <member name="M:ClownFish.Base.StringExtensions.GetBytes(System.String)">
+            <summary>
+            将字符串转成byte[]，等效于：Encoding.UTF8.GetBytes(text);
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
         <member name="T:ClownFish.Base.TestHelper">
             <summary>
             辅助测试的工具类
@@ -212,7 +445,8 @@
         </member>
         <member name="T:ClownFish.Base.Files.FileDependencyManager`1">
             <summary>
-            文件缓存依赖的管理类
+            文件缓存依赖的管理类。
+            注意：请将些类型的实例用【静态字段】来引用，否则会产生内存泄露。
             </summary>
             <typeparam name="T">缓存的数据类型</typeparam>
         </member>
@@ -223,7 +457,8 @@
         </member>
         <member name="M:ClownFish.Base.Files.FileDependencyManager`1.#ctor(System.Func{System.String[],`0},System.String[])">
             <summary>
-            构造方法
+            构造方法。
+            注意：请将些类型的实例用【静态字段】来引用，否则会产生内存泄露。
             </summary>
             <param name="func"></param>
             <param name="files"></param>
@@ -561,6 +796,45 @@
             <param name="value"></param>
             <param name="serializer"></param>
         </member>
+        <member name="T:ClownFish.Base.Reflection.AttributeCache">
+            <summary>
+            缓存反射读取到的Attribute对象
+            </summary>
+        </member>
+        <member name="M:ClownFish.Base.Reflection.AttributeCache.Register``1(System.Object,``0)">
+            <summary>
+            为指定的对象注册Attribute
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <param name="attr"></param>
+        </member>
+        <member name="M:ClownFish.Base.Reflection.AttributeCache.Register``1(System.Object,``0[])">
+            <summary>
+            为指定的对象注册Attribute
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <param name="attrs"></param>
+        </member>
+        <member name="M:ClownFish.Base.Reflection.AttributeCache.GetOne``1(System.Object,System.Boolean)">
+            <summary>
+            检索应用于指定对象的指定类型的自定义特性（返回单个Attribute）
+            </summary>
+            <typeparam name="T">类型参数，要求从Attribute继承</typeparam>
+            <param name="obj">包含Attribute的对象</param>
+            <param name="inherit">如果检查 element 的上级，则为 true；否则为 false。</param>
+            <returns>与 T 相匹配的自定义属性；否则，如果没有找到这类属性，则为 null。</returns>
+        </member>
+        <member name="M:ClownFish.Base.Reflection.AttributeCache.GetArray``1(System.Object,System.Boolean)">
+            <summary>
+            检索应用于指定对象的指定类型的自定义特性（返回Attribute数组）
+            </summary>
+            <typeparam name="T">类型参数，要求从Attribute继承</typeparam>
+            <param name="obj">包含Attribute的对象</param>
+            <param name="inherit">如果检查 element 的上级，则为 true；否则为 false。</param>
+            <returns>与 T 相匹配的自定义属性；否则，如果没有找到这类属性，则为 null。</returns>
+        </member>
         <member name="M:ClownFish.Base.Reflection.DynamicMethodFactory.EmitFastInt(System.Reflection.Emit.ILGenerator,System.Int32)">
             <summary>Emits code to save an integer to the evaluation stack.</summary>
             <param name="ilGenerator">The MSIL generator.</param>
@@ -736,6 +1010,13 @@
         <member name="M:ClownFish.Base.Reflection.ReflectionExtensions.GetPublicTypes(System.Reflection.Assembly)">
             <summary>
             等同于调用 Assembly实例的GetExportedTypes()，只是在缺少依赖程序集时能指出当前程序集的名称。
+            </summary>
+            <param name="assembly"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.Reflection.ReflectionExtensions.GetAllTypes(System.Reflection.Assembly)">
+            <summary>
+            等同于调用 Assembly实例的GetTypes()，只是在缺少依赖程序集时能指出当前程序集的名称。
             </summary>
             <param name="assembly"></param>
             <returns></returns>
@@ -963,6 +1244,40 @@
             <summary>
             定义HttpClient的扩展方法的工具类
             </summary>
+        </member>
+        <member name="M:ClownFish.Base.WebClient.ClientExtensions.GetResult(ClownFish.Base.WebClient.HttpOption)">
+            <summary>
+            封装HttpOption的Send扩展方法发送HTTP请求，
+            如果遇到WebException异常，就转换成RemoteWebException异常
+            </summary>
+            <param name="option"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.WebClient.ClientExtensions.GetResultAsync(ClownFish.Base.WebClient.HttpOption)">
+            <summary>
+            封装HttpOption的SendAsync扩展方法发送HTTP请求，
+            如果遇到WebException异常，就转换成RemoteWebException异常
+            </summary>
+            <param name="option"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.WebClient.ClientExtensions.GetResult``1(ClownFish.Base.WebClient.HttpOption)">
+            <summary>
+            封装HttpOption的Send扩展方法发送HTTP请求，
+            如果遇到WebException异常，就转换成RemoteWebException异常
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="option"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.WebClient.ClientExtensions.GetResultAsync``1(ClownFish.Base.WebClient.HttpOption)">
+            <summary>
+            封装HttpOption的SendAsync扩展方法发送HTTP请求，
+            如果遇到WebException异常，就转换成RemoteWebException异常
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="option"></param>
+            <returns></returns>
         </member>
         <member name="M:ClownFish.Base.WebClient.ClientExtensions.Send(ClownFish.Base.WebClient.HttpOption)">
             <summary>
@@ -1396,10 +1711,53 @@
             <param name="text"></param>
             <returns></returns>
         </member>
+        <member name="M:ClownFish.Base.Xml.XmlCdata.Equals(ClownFish.Base.Xml.XmlCdata)">
+            <summary>
+            比较是否相等
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.Xml.XmlCdata.Equals(System.Object)">
+            <summary>
+            重写 Equals 方法
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.Xml.XmlCdata.GetHashCode">
+            <summary>
+            重写 GetHashCode 方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.Xml.XmlCdata.op_Equality(ClownFish.Base.Xml.XmlCdata,ClownFish.Base.Xml.XmlCdata)">
+            <summary>
+            重写 == 运算符
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.Xml.XmlCdata.op_Inequality(ClownFish.Base.Xml.XmlCdata,ClownFish.Base.Xml.XmlCdata)">
+            <summary>
+            重写 != 运算符
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
         <member name="T:ClownFish.Base.Xml.XmlHelper">
             <summary>
             实现XML序列化与反序列化的包装工具类
             </summary>
+        </member>
+        <member name="M:ClownFish.Base.Xml.XmlHelper.XmlSerializerObject(System.Object)">
+            <summary>
+            将一个对象序列化为XML字符串。这个方法将不生成XML文档声明头。
+            </summary>
+            <param name="o">要序列化的对象</param>
+            <returns>序列化产生的XML字符串</returns>
         </member>
         <member name="M:ClownFish.Base.Xml.XmlHelper.XmlSerialize(System.Object,System.Text.Encoding)">
             <summary>
