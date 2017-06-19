@@ -89,7 +89,11 @@ ORDER BY [Database_Name] ASC";
 
 		public static int GetSqlServerVersion(string connectionString)
 		{
-			using( DbContext dbContext = CreateDbContext(connectionString, null) ) {
+			SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString);
+			if( builder.ConnectTimeout > 10 )   // default is 15
+				builder.ConnectTimeout = 3;		// 避免用户写错了连接字符串，结果傻等15秒，体验太差
+
+			using( DbContext dbContext = CreateDbContext(builder.ToString(), null) ) {
 				string query = "select (@@microsoftversion / 0x01000000);";
 				return dbContext.CPQuery.Create(query).ExecuteScalar<int>();
 			}

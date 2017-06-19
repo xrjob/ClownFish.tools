@@ -213,6 +213,13 @@
             <param name="encoding"></param>
             <returns></returns>
         </member>
+        <member name="M:ClownFish.Base.HashHelper.FileSha1(System.String)">
+            <summary>
+            计算文件的SHA1值
+            </summary>
+            <param name="filePath"></param>
+            <returns></returns>
+        </member>
         <member name="M:ClownFish.Base.HashHelper.Md5(System.String)">
             <summary>
             计算字符串的 MD5 签名
@@ -226,6 +233,13 @@
             </summary>
             <param name="text"></param>
             <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ClownFish.Base.HashHelper.FileMD5(System.String)">
+            <summary>
+            计算文件的MD5值
+            </summary>
+            <param name="filePath"></param>
             <returns></returns>
         </member>
         <member name="T:ClownFish.Base.LazyObject`1">
@@ -414,6 +428,14 @@
             <param name="text"></param>
             <returns></returns>
         </member>
+        <member name="M:ClownFish.Base.StringExtensions.SubstringN(System.String,System.Int32)">
+            <summary>
+            截取一个字符串，只保留部分长度
+            </summary>
+            <param name="text"></param>
+            <param name="keepLength"></param>
+            <returns></returns>
+        </member>
         <member name="T:ClownFish.Base.TestHelper">
             <summary>
             辅助测试的工具类
@@ -460,8 +482,17 @@
             构造方法。
             注意：请将些类型的实例用【静态字段】来引用，否则会产生内存泄露。
             </summary>
-            <param name="func"></param>
-            <param name="files"></param>
+            <param name="loadFileCallback">当需要加载文件时的回调委托</param>
+            <param name="files">要读取的文件，读取后会做修改监控</param>
+        </member>
+        <member name="M:ClownFish.Base.Files.FileDependencyManager`1.#ctor(System.Func{System.String[],`0},System.Action{System.String[],System.Web.Caching.CacheItemRemovedReason},System.String[])">
+            <summary>
+            构造方法。
+            注意：请将些类型的实例用【静态字段】来引用，否则会产生内存泄露。
+            </summary>
+            <param name="loadFileCallback">当需要加载文件时的回调委托</param>
+            <param name="afterRemoveCallback">缓存移除后触发的回调委托</param>
+            <param name="files">要读取的文件，读取后会做修改监控</param>
         </member>
         <member name="F:ClownFish.Base.Files.FileDependencyManager`1.s_WaitFileCloseTimeout">
             <summary>
@@ -1766,6 +1797,13 @@
             <param name="o">要序列化的对象</param>
             <param name="encoding">编码方式</param>
             <returns>序列化产生的XML字符串</returns>
+        </member>
+        <member name="M:ClownFish.Base.Xml.XmlHelper.XmlSerializeToFile(System.Object,System.String)">
+            <summary>
+            将一个对象按XML序列化的方式写入到一个文件（采用UTF8编码）
+            </summary>
+            <param name="o">要序列化的对象</param>
+            <param name="path">保存文件路径</param>
         </member>
         <member name="M:ClownFish.Base.Xml.XmlHelper.XmlSerializeToFile(System.Object,System.String,System.Text.Encoding)">
             <summary>

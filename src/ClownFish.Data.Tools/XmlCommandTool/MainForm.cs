@@ -274,7 +274,7 @@ namespace ClownFish.Data.Tools.XmlCommandTool
 				string commandText = command.CommandText;
 
 				command.CommandText = "....................";
-				txtXML.Text = XmlHelper.XmlSerialize(command, Encoding.UTF8);
+				txtXML.Text = XmlHelper.XmlSerializerObject(command);
 				txtSQL.Text = commandText;
 				command.CommandText = commandText;
 			}

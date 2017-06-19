@@ -413,7 +413,7 @@ namespace ClownFish.Data.Tools.EntityGenerator
 				List<XmlCommandItem> list = SqlServerHelper.GetCUDCommandByTableName(
 									_connectionString, database, _lastRightClickSelectedNode.Text);
 
-				string xml = XmlHelper.XmlSerialize(list, Encoding.UTF8);
+				string xml = XmlHelper.XmlSerializerObject(list);
 				Clipboard.SetText(xml);
 			});
 		}
