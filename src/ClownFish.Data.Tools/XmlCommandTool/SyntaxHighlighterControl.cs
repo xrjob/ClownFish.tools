@@ -15,7 +15,7 @@ namespace ClownFish.Data.Tools.XmlCommandTool
 			InitializeComponent();
 
 			if( this.DesignMode == false ) {
-				this.textEditorControl1.Font = new Font("Courier New", 9.5f);
+				this.textEditorControl1.Font = new Font("Consolas", 9f);
 				this.ReadOnly = true;
 				this.Language = this.Language;
 
