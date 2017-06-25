@@ -54,6 +54,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\ClownFish.HttpServer\src\ClownFish.HttpTest\RequestTest.cs">
+      <Link>ShareCode\RequestTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\ClownFish.net\src\ClownFish.Base\Xml\XmlCdata.cs">
+      <Link>ShareCode\XmlCdata.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\ClownFish.net\src\ClownFish.Base\Xml\XmlHelper.cs">
+      <Link>ShareCode\XmlHelper.cs</Link>
+    </Compile>
     <Compile Include="CompressHelper.cs" />
     <Compile Include="DbActionInfo.cs" />
     <Compile Include="DbActionListControl.cs">
@@ -98,6 +107,7 @@
     <Content Include="Resources\page2.ico" />
     <Content Include="Resources\Runsql.ico" />
     <Content Include="Resources\save.ico" />
+    <Content Include="ShareCode\Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DbActionListControl.resx">

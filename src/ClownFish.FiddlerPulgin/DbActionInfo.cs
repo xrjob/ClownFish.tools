@@ -19,6 +19,8 @@ namespace ClownFish.FiddlerPulgin
 
 		public string ErrorMsg { get; set; }
 
+		internal string SqlShowText { get; set; }
+
 		public List<CommandParameter> Parameters { get; set; }
 
 		public static string Serialize(DbActionInfo info)

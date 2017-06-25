@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ClownFish.HttpTest;
 using Fiddler;
 
 namespace ClownFish.FiddlerPulgin
@@ -22,6 +24,7 @@ namespace ClownFish.FiddlerPulgin
 		private NotReasonableControl _notReasonableCtrl;
 		
 		private MenuItem _menuItemCopySessionRequest;
+		private MenuItem _menuItemCopySessionAsTestCase;
 		private MethodInfo _lvSessions_KeyDown;
 
 		private string _headerFlag;
@@ -113,16 +116,123 @@ namespace ClownFish.FiddlerPulgin
 		private void SetMenu()
 		{
 			// 扩展菜单项
-			_menuItemCopySessionRequest = new MenuItem("保存选择的会话请求到剪切板......");
+			_menuItemCopySessionRequest = new MenuItem("保存所有选择会话的Request到剪切板......");
 			_menuItemCopySessionRequest.Shortcut = Shortcut.CtrlC;
 			_menuItemCopySessionRequest.ShowShortcut = true;
 			FiddlerApplication.UI.miSessionCopy.MenuItems.Add(_menuItemCopySessionRequest);
 			_menuItemCopySessionRequest.Click += menuItemCopySessionRequest_Click;
+
+
+			_menuItemCopySessionAsTestCase = new MenuItem("从所有选择会话创建测试用例，并将内容复制到剪切板......");
+			FiddlerApplication.UI.miSessionCopy.MenuItems.Add(_menuItemCopySessionAsTestCase);
+			_menuItemCopySessionAsTestCase.Click += menuItemCopySessionAsTestCase_Click;
 		}
 
 
+		private void menuItemCopySessionAsTestCase_Click(object sender, EventArgs e)
+		{
+			Fiddler.Session[] sessions = FiddlerApplication.UI.GetSelectedSessions();
+			if( sessions == null || sessions.Length == 0 )
+				return;
 
-		void menuItemCopySessionRequest_Click(object sender, EventArgs e)
+			List<RequestTest> list = new List<HttpTest.RequestTest>(sessions.Length);
+
+			// 获取所有的请求内容
+			foreach( Fiddler.Session session in sessions ) {
+				string lineHeaders = session.oRequest.headers.ToString(true, false, true);
+				lineHeaders = FilterRequestHeader(lineHeaders);
+				string postData = session.GetRequestBodyAsString();
+
+
+				RequestTest test = new RequestTest();
+				list.Add(test);
+
+				if( IsWithoutPostData(session.RequestMethod))
+					test.Request = "\r\n" + lineHeaders;
+				else
+					test.Request = "\r\n" + lineHeaders + "\r\n" + postData + "\r\n";
+
+				test.Category = string.Empty;
+				test.Title = string.Empty;
+				test.Response = new ResponseAssert();
+
+
+				if( session.bHasResponse ) {
+					test.Response.StatusCode = session.ResponseHeaders.HTTPResponseCode;
+					test.Response.Headers = new List<ResponseHeaderAssert>();
+					test.Response.Body = new List<ResponseBodyAssert>();
+
+					// 默认用 Content-Type 做为示例
+					var header = session.ResponseHeaders.FirstOrDefault(x => x.Name == "Content-Type");
+					if( header != null ) {
+						test.Response.Headers.Add(new ResponseHeaderAssert {
+							Name = header.Name,
+							AssertMode = "==",
+							Value = header.Value });
+					}
+					else {
+						// 增加一个空模板
+						test.Response.Headers.Add(new ResponseHeaderAssert {
+							Name = "header_Name",
+							AssertMode = "",
+							Value = "this_is_placeholder"  // 加下划线方便双击选择
+						});
+					}
+
+					// 增加一个空模板
+					test.Response.Body.Add(new ResponseBodyAssert {
+						Name = "Text",
+						AssertMode = "",
+						Value = "this_is_placeholder"  // 加下划线方便双击选择
+					});
+				}
+			}
+			
+
+			string xml = ClownFish.Base.Xml.XmlHelper.XmlSerialize(list, Encoding.UTF8);
+			Clipboard.SetText(xml);
+		}
+
+
+		private bool IsWithoutPostData(string method)
+		{
+			// 参考 Fiddler 的判断规则
+			return (method == "GET"
+				|| method == "HEAD"
+				|| method == "TRACE"
+				|| method == "DELETE"
+				|| method == "CONNECT"
+				|| method == "MKCOL"
+				|| method == "COPY"
+				|| method == "MOVE"
+				|| method == "UNLOCK"
+				|| method == "OPTIONS"
+				);
+		}
+
+		private string FilterRequestHeader(string text)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			// 去掉一些无用头
+			using( StringReader reader = new StringReader(text) ) {
+				string line = null;
+				while( (line = reader.ReadLine()) != null ) {
+					if( line.StartsWith("X-Fiddler-Profiler:", StringComparison.OrdinalIgnoreCase)
+						|| line.StartsWith("Host:", StringComparison.OrdinalIgnoreCase)
+						|| line.StartsWith("Content-Length:", StringComparison.OrdinalIgnoreCase)
+						)
+						continue;
+
+					sb.AppendLine(line);
+				}
+			}
+
+			return sb.ToString();
+		}
+
+
+		private void menuItemCopySessionRequest_Click(object sender, EventArgs e)
 		{
 			Fiddler.Session[] sessions = FiddlerApplication.UI.GetSelectedSessions();
 			if( sessions == null || sessions.Length == 0 )
@@ -130,13 +240,17 @@ namespace ClownFish.FiddlerPulgin
 
 			StringBuilder sb = new StringBuilder();
 
+			// 获取所有的请求内容
 			foreach( Fiddler.Session session in sessions ) {
-				sb.AppendLine(session.oRequest.headers.ToString(true, false, true));
-				sb.AppendLine(session.GetRequestBodyAsString()).AppendLine("\r\n");
+				string lineHeaders = session.oRequest.headers.ToString(true, false, true);
+				lineHeaders = FilterRequestHeader(lineHeaders);
+				string postData = session.GetRequestBodyAsString();
+
+				sb.AppendLine(lineHeaders);
+				sb.AppendLine(postData).AppendLine("\r\n");
 			}
 
-			//if( sb.Length > 0 )
-			//	Clipboard.SetText(sb.ToString().Replace("X-Fiddler-Profiler: 1", string.Empty));
+			Clipboard.SetText(sb.ToString());
 		}
 
 
