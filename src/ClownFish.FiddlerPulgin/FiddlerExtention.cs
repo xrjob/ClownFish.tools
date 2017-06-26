@@ -371,9 +371,7 @@ namespace ClownFish.FiddlerPulgin
 				//oSession.oRequest["X-Fiddler.FiddlerPulgin-Ver"] = _fileVersion;
 			}
 		}
-
-		private static readonly Regex s_urlTimeVersionRegex = new Regex(@"[?&]_t=\d+", RegexOptions.Compiled);
-
+        
 		public void AutoTamperResponseAfter(Session oSession)
 		{
 			if( oSession.bHasResponse == false )	// 确保服务端已响应请求
@@ -383,49 +381,9 @@ namespace ClownFish.FiddlerPulgin
 			if( profilerFlag != "OK" )				// 确保是已知的服务端回应
 				return;
 
-			//----------------------------------------------------------------------
 
-			if( oSession.responseCode == 404 ) {
-				this._notReasonableCtrl.AddSession("404-错误", oSession, false);
-			}			
-			else if( oSession.responseCode == 500 ) {
-				this._notReasonableCtrl.AddSession("500-程序异常", oSession, false);
-			}
-
-
-			if( oSession.responseBodyBytes != null && oSession.responseBodyBytes.Length > 512 * 1024 )
-				this._notReasonableCtrl.AddSession("服务端输出内容大于512K", oSession, false);
-
-
-			int connectionCount = oSession.GetResponseHeader<int>("X-SQL-ConnectionCount");
-			if( connectionCount > 3 )
-				this._notReasonableCtrl.AddSession("数据库连接次数超过3次*", oSession, true);
-
-
-			TimeSpan times = oSession.Timers.ClientDoneResponse - oSession.Timers.ClientBeginRequest;
-			if( times.TotalMilliseconds > 2000 )
-				this._notReasonableCtrl.AddSession("网络请求时间超过2秒", oSession, false);
-
-
-			string contentType = oSession.GetResponseHeader<string>("Content-Type");
-			if( contentType.StartsWith("application/x-javascript", StringComparison.OrdinalIgnoreCase)
-				|| contentType.StartsWith("text/css", StringComparison.OrdinalIgnoreCase) ) {
-
-				string expires = oSession.GetResponseHeader<string>("Expires");
-				string cacheControl = oSession.GetResponseHeader<string>("Cache-Control");
-
-				if( string.IsNullOrEmpty(expires) || cacheControl.StartsWith("public, max-age=") == false )
-					this._notReasonableCtrl.AddSession("资源文件没有设置缓存响应头*", oSession, true);
-
-				if( s_urlTimeVersionRegex.IsMatch(oSession.PathAndQuery) == false )
-					this._notReasonableCtrl.AddSession("资源文件没有指定版本号*", oSession, true);
-			}
-
-
-			string requestWith = oSession.GetResponseHeader<string>("X-Requested-With");
-			if( string.IsNullOrEmpty(requestWith) == false )
-				// 分析重复请求
-				this._notReasonableCtrl.AnalyzeRepeatRequest(oSession);
+            // 检查响应，分析是否不符合规范要求
+            this._notReasonableCtrl.CheckResponse(oSession);			
 		}
 
 		public void AutoTamperResponseBefore(Session oSession)

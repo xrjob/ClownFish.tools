@@ -91,7 +91,7 @@ namespace ClownFish.FiddlerPulgin
 
 			foreach( DbActionInfo info in list ) {
 				if( info.SqlText == DbActionInfo.OpenConnectionFlag ) {
-					g = new ListViewGroup(string.Format("第 {0} 次打开连接", (groupIndex++).ToString()));
+					g = new ListViewGroup(string.Format("Connection {0}", (groupIndex++).ToString()));
 					listView1.Groups.Add(g);
 				}
 				else {
@@ -188,6 +188,17 @@ namespace ClownFish.FiddlerPulgin
                 Clipboard.SetText(sql);
             }
             catch(Exception ex ) {
+                MessageBox.Show(ex.Message, "ClownFish.FiddlerPulgin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            try {
+                System.Diagnostics.Process.Start("http://note.youdao.com/noteshare?id=3bc614e60011f46ae2fdeadb235e2dca");
+            }
+            catch( Exception ex ) {
                 MessageBox.Show(ex.Message, "ClownFish.FiddlerPulgin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }

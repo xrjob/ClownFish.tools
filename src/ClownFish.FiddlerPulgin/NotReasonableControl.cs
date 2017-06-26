@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Collections;
 using System.Threading;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 
 namespace ClownFish.FiddlerPulgin
 {
@@ -34,8 +35,10 @@ namespace ClownFish.FiddlerPulgin
 		// 仅供 FiddlerExtention 触发，不考虑线程同步
 		private Dictionary<string, int> _urlDict = new Dictionary<string, int>();
 
+        private static readonly Regex s_urlTimeVersionRegex = new Regex(@"[?&]_t=\d+", RegexOptions.Compiled);
 
-		private class MsgSessionItem
+
+        private class MsgSessionItem
 		{
 			public string Message;
 			public Fiddler.Session Session;
@@ -87,7 +90,54 @@ namespace ClownFish.FiddlerPulgin
 		}
 
 
-		internal void AddSession(string reason, Fiddler.Session session, bool checkRepeat)
+
+        internal void CheckResponse(Session oSession)
+        {
+            if( oSession.responseCode == 404 ) {
+                this.AddSession("404-错误", oSession, false);
+            }
+            else if( oSession.responseCode == 500 ) {
+                this.AddSession("500-程序异常", oSession, false);
+            }
+
+
+            if( oSession.responseBodyBytes != null && oSession.responseBodyBytes.Length > 512 * 1024 )
+                this.AddSession("服务端输出内容大于512K", oSession, false);
+
+
+            int connectionCount = oSession.GetResponseHeader<int>("X-SQL-ConnectionCount");
+            if( connectionCount > 3 )
+                this.AddSession("数据库连接次数超过3次*", oSession, true);
+
+
+            TimeSpan times = oSession.Timers.ClientDoneResponse - oSession.Timers.ClientBeginRequest;
+            if( times.TotalMilliseconds > 2000 )
+                this.AddSession("网络请求时间超过2秒", oSession, false);
+
+
+            string contentType = oSession.GetResponseHeader<string>("Content-Type");
+            if( contentType.StartsWith("application/x-javascript", StringComparison.OrdinalIgnoreCase)
+                || contentType.StartsWith("text/css", StringComparison.OrdinalIgnoreCase) ) {
+
+                string expires = oSession.GetResponseHeader<string>("Expires");
+                string cacheControl = oSession.GetResponseHeader<string>("Cache-Control");
+
+                if( string.IsNullOrEmpty(expires) || cacheControl.StartsWith("public, max-age=") == false )
+                    this.AddSession("资源文件没有设置缓存响应头*", oSession, true);
+
+                if( s_urlTimeVersionRegex.IsMatch(oSession.PathAndQuery) == false )
+                    this.AddSession("资源文件没有指定版本号*", oSession, true);
+            }
+
+
+            string requestWith = oSession.GetResponseHeader<string>("X-Requested-With");
+            if( string.IsNullOrEmpty(requestWith) == false )
+                // 分析重复请求
+                this.AnalyzeRepeatRequest(oSession);
+        }
+
+
+        private void AddSession(string reason, Fiddler.Session session, bool checkRepeat)
 		{
 			if( checkRepeat ) {
 				string key = reason + session.fullUrl;
@@ -108,7 +158,7 @@ namespace ClownFish.FiddlerPulgin
 			}
 		}
 
-		internal void AnalyzeRepeatRequest(Session oSession)
+        private void AnalyzeRepeatRequest(Session oSession)
 		{
 			lock( (_threadQueue as ICollection).SyncRoot ) {
 				_threadQueue.Enqueue(oSession);

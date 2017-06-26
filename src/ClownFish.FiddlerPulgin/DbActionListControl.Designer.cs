@@ -30,6 +30,7 @@
             this.components = new System.ComponentModel.Container();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.chkEnabled = new System.Windows.Forms.CheckBox();
             this.labSumTime = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -39,6 +40,7 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // imageList1
@@ -49,6 +51,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Controls.Add(this.chkEnabled);
             this.panel1.Controls.Add(this.labSumTime);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -57,11 +60,24 @@
             this.panel1.Size = new System.Drawing.Size(598, 23);
             this.panel1.TabIndex = 0;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBox1.Image = global::ClownFish.FiddlerPulgin.Properties.Resources.help;
+            this.pictureBox1.Location = new System.Drawing.Point(574, 4);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(16, 16);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 3;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            // 
             // chkEnabled
             // 
             this.chkEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkEnabled.AutoSize = true;
-            this.chkEnabled.Location = new System.Drawing.Point(467, 5);
+            this.chkEnabled.Location = new System.Drawing.Point(446, 5);
             this.chkEnabled.Name = "chkEnabled";
             this.chkEnabled.Size = new System.Drawing.Size(120, 16);
             this.chkEnabled.TabIndex = 2;
@@ -72,10 +88,10 @@
             // labSumTime
             // 
             this.labSumTime.AutoSize = true;
-            this.labSumTime.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labSumTime.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labSumTime.Location = new System.Drawing.Point(12, 5);
             this.labSumTime.Name = "labSumTime";
-            this.labSumTime.Size = new System.Drawing.Size(43, 13);
+            this.labSumTime.Size = new System.Drawing.Size(49, 14);
             this.labSumTime.TabIndex = 1;
             this.labSumTime.Text = "label1";
             // 
@@ -150,6 +166,7 @@
             this.Resize += new System.EventHandler(this.DbActionListControl_Resize);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -167,6 +184,6 @@
 		private System.Windows.Forms.ColumnHeader columnHeader2;
 		private System.Windows.Forms.ColumnHeader columnHeader3;
 		private System.Windows.Forms.CheckBox chkEnabled;
-
-	}
+        private System.Windows.Forms.PictureBox pictureBox1;
+    }
 }
