@@ -42,7 +42,7 @@ namespace ClownFish.FiddlerPulgin
 		{
 			public string Message;
 			public Fiddler.Session Session;
-            public string SessionId;
+            public string SessionBackId;		// 反向定位ID
 		}
 
 
@@ -94,28 +94,28 @@ namespace ClownFish.FiddlerPulgin
 
         internal void CheckResponse(Session oSession)
         {
-            string sessionId = Guid.NewGuid().ToString();
+            string sessionBackId = Guid.NewGuid().ToString();
 
             if( oSession.responseCode == 404 ) {
-                this.AddSession("404-错误", oSession, false, sessionId);
+                this.AddSession("404-错误", oSession, false, sessionBackId);
             }
             else if( oSession.responseCode == 500 ) {
-                this.AddSession("500-程序异常", oSession, false, sessionId);
+                this.AddSession("500-程序异常", oSession, false, sessionBackId);
             }
 
 
             if( oSession.responseBodyBytes != null && oSession.responseBodyBytes.Length > 512 * 1024 )
-                this.AddSession("服务端输出内容大于512K", oSession, false, sessionId);
+                this.AddSession("服务端输出内容大于512K", oSession, false, sessionBackId);
 
 
             int connectionCount = oSession.GetResponseHeader<int>("X-SQL-ConnectionCount");
             if( connectionCount > 3 )
-                this.AddSession("数据库连接次数超过3次*", oSession, true, sessionId);
+                this.AddSession("数据库连接次数超过3次*", oSession, true, sessionBackId);
 
 
             TimeSpan times = oSession.Timers.ClientDoneResponse - oSession.Timers.ClientBeginRequest;
             if( times.TotalMilliseconds > 2000 )
-                this.AddSession("网络请求时间超过2秒", oSession, false, sessionId);
+                this.AddSession("网络请求时间超过2秒", oSession, false, sessionBackId);
 
 
             string contentType = oSession.GetResponseHeader<string>("Content-Type");
@@ -126,20 +126,20 @@ namespace ClownFish.FiddlerPulgin
                 string cacheControl = oSession.GetResponseHeader<string>("Cache-Control");
 
                 if( string.IsNullOrEmpty(expires) || cacheControl.StartsWith("public, max-age=") == false )
-                    this.AddSession("资源文件没有设置缓存响应头*", oSession, true, sessionId);
+                    this.AddSession("资源文件没有设置缓存响应头*", oSession, true, sessionBackId);
 
                 if( s_urlTimeVersionRegex.IsMatch(oSession.PathAndQuery) == false )
-                    this.AddSession("资源文件没有指定版本号*", oSession, true, sessionId);
+                    this.AddSession("资源文件没有指定版本号*", oSession, true, sessionBackId);
             }
 
             int bigSqlCount;
             TimeSpan sumTimeSpan;
             if( oSession.AnalyzeSqlActions(out bigSqlCount, out sumTimeSpan) ) {
                 if( bigSqlCount > 0 )
-                    this.AddSession($"存在性能较差的SQL({bigSqlCount}条)", oSession, false, sessionId);
+                    this.AddSession($"存在性能较差的SQL({bigSqlCount}条)", oSession, false, sessionBackId);
 
                 if( sumTimeSpan.TotalMilliseconds > 1500 )
-                    this.AddSession($"SQL总时间超标({sumTimeSpan})", oSession, false, sessionId);
+                    this.AddSession($"SQL总时间超标({sumTimeSpan})", oSession, false, sessionBackId);
             }
 
 
@@ -150,7 +150,7 @@ namespace ClownFish.FiddlerPulgin
         }
 
 
-        private void AddSession(string reason, Fiddler.Session session, bool checkRepeat, string sessionId)
+        private void AddSession(string reason, Fiddler.Session session, bool checkRepeat, string sessionBackId)
 		{
 			if( checkRepeat ) {
 				string key = reason + session.fullUrl;
@@ -171,7 +171,7 @@ namespace ClownFish.FiddlerPulgin
 				_messageQueue.Add(new MsgSessionItem {
                     Message = reason,
                     Session = session,
-                    SessionId = sessionId });
+                    SessionBackId = sessionBackId });
 			}
 		}
 
@@ -231,9 +231,9 @@ namespace ClownFish.FiddlerPulgin
 					_repeatDict[key] = (++value);
 			}
 
-            if( value == 2 ) {		// 第一次发现重复
-                string sessionId = Guid.NewGuid().ToString();
-                AddSession("重复的请求*", session, false, sessionId);
+            if( value == 2 ) {      // 第一次发现重复
+				string sessionBackId = null;        // 重复的请求不做反向定位，没什么意义
+				AddSession("重复的请求*", session, false, sessionBackId);
             }
 		}
 
@@ -320,7 +320,7 @@ namespace ClownFish.FiddlerPulgin
 					MsgSessionItem msi = tempList[i];
                     RequetItemTag tag = new RequetItemTag {
                         Request = msi.Session.oRequest.headers.ToString() + "\r\n\r\n" + msi.Session.GetRequestBodyAsString(),
-                        SessionId = msi.SessionId
+                        SessionBackId = msi.SessionBackId
                     };
 
 					ListViewItem item = new ListViewItem((index++).ToString(), 0);
@@ -331,12 +331,13 @@ namespace ClownFish.FiddlerPulgin
 
 
                     // 设置一个标记，用于反向定位
-                    msi.Session[s_sessionGoBackKey] = msi.SessionId;                    
+					if( msi.SessionBackId  != null )
+						msi.Session[s_sessionGoBackKey] = msi.SessionBackId;                    
 				}
 
 				listView1.Items.AddRange(items);
 
-				listView1.Items[listView1.Items.Count - 1].EnsureVisible();
+				//listView1.Items[listView1.Items.Count - 1].EnsureVisible();
 				timer1.Enabled = true;
 			}
 		}
@@ -438,10 +439,12 @@ namespace ClownFish.FiddlerPulgin
             if( item == null )
                 return;
 
-            string sessionId = (item.Tag as RequetItemTag).SessionId;
+            string sessionBackId = (item.Tag as RequetItemTag).SessionBackId;
+			if( string.IsNullOrEmpty(sessionBackId) )		// 导入进来的，没有会话ID
+				return;
 
             try {
-                FiddlerApplication.UI.actSelectSessionsMatchingCriteria(x => x[s_sessionGoBackKey] == sessionId);
+                FiddlerApplication.UI.actSelectSessionsMatchingCriteria(x => x[s_sessionGoBackKey] == sessionBackId);
 
                 if( FiddlerApplication.UI.lvSessions.SelectedItems.Count > 0 )
                     FiddlerApplication.UI.lvSessions.SelectedItems[0].EnsureVisible();

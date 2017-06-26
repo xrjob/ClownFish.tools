@@ -14,6 +14,6 @@ namespace ClownFish.FiddlerPulgin
         public string Request { get; set; }
 
         // Fiddler中的会话标记ID
-        public string SessionId { get; set; }
+        public string SessionBackId { get; set; }
     }
 }
