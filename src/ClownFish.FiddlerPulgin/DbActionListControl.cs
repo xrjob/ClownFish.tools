@@ -163,7 +163,7 @@ namespace ClownFish.FiddlerPulgin
 			DbActionInfo info = (DbActionInfo)item.Tag;
 
 			if( info.SqlShowText == null )
-				info.SqlShowText = info.ToSqlText();
+				info.SqlShowText = info.ToShowText();
 
 			textBox1.Text = info.SqlShowText;
 		}
@@ -175,6 +175,16 @@ namespace ClownFish.FiddlerPulgin
 			labSumTime.Text = string.Empty;
 		}
 
-		
-	}
+        private void listView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if( listView1.SelectedItems.Count < 1 )
+                return;
+
+            ListViewItem item = listView1.SelectedItems[0];
+            DbActionInfo info = (DbActionInfo)item.Tag;
+
+            string sql = info.ToSqlText();
+            Clipboard.SetText(sql);
+        }
+    }
 }

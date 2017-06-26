@@ -42,7 +42,7 @@ namespace ClownFish.FiddlerPulgin
 			return sb.ToString();
 		}
 
-		internal static string ToSqlText(this DbActionInfo info)
+		internal static string ToShowText(this DbActionInfo info)
 		{
 			if( info.SqlText == DbActionInfo.OpenConnectionFlag ) 
 				return string.Empty;
@@ -71,19 +71,36 @@ namespace ClownFish.FiddlerPulgin
 					sb.AppendFormat("  {0} = ({1}) {2}\r\n", p.Name, p.DbType, p.Value);
 
 				sb.AppendLine("\r\n");
-
-				// 为了方便调试，运行SQL语句，这里将参数生成 declare 语句
-				// 放在最后，而不是放在开头的原因：避免错以为运行的SQL中包含这些参数的declare定义
-				foreach( CommandParameter p in info.Parameters ) {
-					sb.AppendLine(p.ToDeclareString());
-				}
 			}
 
 			return sb.ToString();
 		}
 
 
-		private static string ToDeclareString(this CommandParameter p)
+        internal static string ToSqlText(this DbActionInfo info)
+        {
+            if( info.SqlText == DbActionInfo.OpenConnectionFlag )
+                return string.Empty;
+
+
+            string commandText = RepairLFchar(info.SqlText);
+            StringBuilder sb = new StringBuilder(2048);
+
+            if( info.Parameters != null && info.Parameters.Count > 0 ) {
+                foreach( CommandParameter p in info.Parameters ) 
+                    sb.AppendLine(p.ToDeclareString());
+            }
+
+
+            sb.AppendLine(commandText);
+            sb.AppendLine("\r\n");
+
+            return sb.ToString();
+        }
+
+
+
+        private static string ToDeclareString(this CommandParameter p)
 		{
 			StringBuilder sb = new StringBuilder(512);
 			switch( p.DbType ) {
