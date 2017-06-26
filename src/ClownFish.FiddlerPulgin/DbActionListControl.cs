@@ -43,37 +43,15 @@ namespace ClownFish.FiddlerPulgin
 
 		public void RefreshUI(Session oSession)
 		{
-			List<DbActionInfo> list = TryGetDbActionListFromResponseHeader(oSession);
+			List<DbActionInfo> list = oSession.TryGetDbActionList();
 			if( list != null )
 				this.LoadData(list);
 			else
 				this.ClearUI();
 		}
+        
 
-
-		private List<DbActionInfo> TryGetDbActionListFromResponseHeader(Session oSession)
-		{
-			List<DbActionInfo> list = null;
-
-			int index = 1;
-			for( ;;) {
-				string headerName = "X-SQL-Action-" + (index++).ToString();
-				string value = oSession.GetResponseHeader<string>(headerName);
-				if( string.IsNullOrEmpty(value) )
-					break;
-
-				DbActionInfo info = DbActionInfo.Deserialize(value);
-
-				if( list == null )
-					list = new List<DbActionInfo>();
-				list.Add(info);
-			}
-
-			return list;
-		}
-
-
-		public void LoadData(List<DbActionInfo> list)
+		private void LoadData(List<DbActionInfo> list)
 		{
 			if( list == null )
 				return;
