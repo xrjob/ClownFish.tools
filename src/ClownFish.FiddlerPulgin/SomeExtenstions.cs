@@ -99,96 +99,97 @@ namespace ClownFish.FiddlerPulgin
         }
 
 
-
         private static string ToDeclareString(this CommandParameter p)
-		{
-			StringBuilder sb = new StringBuilder(512);
-			switch( p.DbType ) {
-				case "AnsiString":
-				case "AnsiStringFixedLength":
-				case "StringFixedLength":
-				case "String":
-				case "Xml":
-					// 这里不知道字符中的长度，统一定义成 nvarchar(max)
-					sb.AppendLine($"declare {p.Name} as nvarchar(max);");
-					sb.AppendLine($"set {p.Name} = N'{p.Value}';");
-					break;
+        {
+            string paraName = p.Name.StartsWith("@") ? p.Name : ("@" + p.Name);
+            StringBuilder sb = new StringBuilder(512);
+            switch( p.DbType ) {
+                case "AnsiString":
+                case "AnsiStringFixedLength":
+                case "StringFixedLength":
+                case "String":
+                case "Xml":
+                    // 这里不知道字符中的长度，统一定义成 nvarchar(max)
+                    sb.AppendLine($"declare {paraName} as nvarchar(max);");
+                    sb.AppendLine($"set {paraName} = N'{p.Value}';");
+                    break;
 
-				case "Boolean":
-					sb.AppendLine($"declare {p.Name} as bit;");
-					string boolValue = p.Value == "NULL" ? "NULL" : (p.Value == "True" ? "1" : "0");
-					sb.AppendLine($"set {p.Name} = {boolValue};");
-					break;
+                case "Boolean":
+                    sb.AppendLine($"declare {paraName} as bit;");
+                    string boolValue = p.Value == "NULL" ? "NULL" : (p.Value == "True" ? "1" : "0");
+                    sb.AppendLine($"set {paraName} = {boolValue};");
+                    break;
 
-				case "Date":
-				case "DateTime":
-					sb.AppendLine($"declare {p.Name} as datetime;");
-					sb.AppendLine($"set {p.Name} = '{p.Value}';");
-					break;
-
-
-				case "Guid":
-					sb.AppendLine($"declare {p.Name} as uniqueidentifier;");
-					sb.AppendLine($"set {p.Name} = '{p.Value}';");
-					break;
-
-				case "Int16":
-				case "UInt16":
-					sb.AppendLine($"declare {p.Name} as smallint;");
-					sb.AppendLine($"set {p.Name} = {p.Value};");
-					break;
-
-				case "Int32":
-				case "UInt32":
-					sb.AppendLine($"declare {p.Name} as int;");
-					sb.AppendLine($"set {p.Name} = {p.Value};");
-					break;
-
-				case "Int64":
-				case "UInt64":
-					sb.AppendLine($"declare {p.Name} as bigint;");
-					sb.AppendLine($"set {p.Name} = {p.Value};");
-					break;
-
-				// TODO: 下面几个数字的映射要测试
-				case "Currency":
-					sb.AppendLine($"declare {p.Name} as money;");
-					sb.AppendLine($"set {p.Name} = {p.Value};");
-					break;
-
-				case "Decimal":
-					sb.AppendLine($"declare {p.Name} as decimal;");
-					sb.AppendLine($"set {p.Name} = {p.Value};");
-					break;
-
-				case "Double":
-				case "Single":
-					sb.AppendLine($"declare {p.Name} as float;");
-					sb.AppendLine($"set {p.Name} = {p.Value};");
-					break;
-
-				case "VarNumeric":
-					sb.AppendLine($"declare {p.Name} as real;");
-					sb.AppendLine($"set {p.Name} = {p.Value};");
-					break;
+                case "Date":
+                case "DateTime":
+                    sb.AppendLine($"declare {paraName} as datetime;");
+                    sb.AppendLine($"set {paraName} = '{p.Value}';");
+                    break;
 
 
-				// 不支持的类型，不知道给什么样的类型才好，程序中应该不会用到这些偏门的类型
-				case "Object":
-				case "SByte":
-				case "Binary":
-				case "Byte":
-				case "DateTime2":
-				case "DateTimeOffset":
-				case "Time":
-				default:
-					sb.AppendLine($"declare {p.Name} as xxxxxxxxxxxx;");
-					sb.AppendLine($"set {p.Name} = {p.Value};");
-					break;
+                case "Guid":
+                    sb.AppendLine($"declare {paraName} as uniqueidentifier;");
+                    sb.AppendLine($"set {paraName} = '{p.Value}';");
+                    break;
 
-			}
-			return sb.ToString();
-		}
+                case "Int16":
+                case "UInt16":
+                    sb.AppendLine($"declare {paraName} as smallint;");
+                    sb.AppendLine($"set {paraName} = {p.Value};");
+                    break;
 
-	}
+                case "Int32":
+                case "UInt32":
+                    sb.AppendLine($"declare {paraName} as int;");
+                    sb.AppendLine($"set {paraName} = {p.Value};");
+                    break;
+
+                case "Int64":
+                case "UInt64":
+                    sb.AppendLine($"declare {paraName} as bigint;");
+                    sb.AppendLine($"set {paraName} = {p.Value};");
+                    break;
+
+                // TODO: 下面几个数字的映射要测试
+                case "Currency":
+                    sb.AppendLine($"declare {paraName} as money;");
+                    sb.AppendLine($"set {paraName} = {p.Value};");
+                    break;
+
+                case "Decimal":
+                    sb.AppendLine($"declare {paraName} as decimal;");
+                    sb.AppendLine($"set {paraName} = {p.Value};");
+                    break;
+
+                case "Double":
+                case "Single":
+                    sb.AppendLine($"declare {paraName} as float;");
+                    sb.AppendLine($"set {paraName} = {p.Value};");
+                    break;
+
+                case "VarNumeric":
+                    sb.AppendLine($"declare {paraName} as real;");
+                    sb.AppendLine($"set {paraName} = {p.Value};");
+                    break;
+
+
+                // 不支持的类型，不知道给什么样的类型才好，程序中应该不会用到这些偏门的类型
+                case "Object":
+                case "SByte":
+                case "Binary":
+                case "Byte":
+                case "DateTime2":
+                case "DateTimeOffset":
+                case "Time":
+                default:
+                    sb.AppendLine($"declare {paraName} as xxxxxxxxxxxx;");
+                    sb.AppendLine($"set {paraName} = {p.Value};");
+                    break;
+
+            }
+            return sb.ToString();
+        }
+
+
+    }
 }
