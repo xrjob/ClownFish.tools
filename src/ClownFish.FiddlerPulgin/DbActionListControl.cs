@@ -184,7 +184,12 @@ namespace ClownFish.FiddlerPulgin
             DbActionInfo info = (DbActionInfo)item.Tag;
 
             string sql = info.ToSqlText();
-            Clipboard.SetText(sql);
+            try {
+                Clipboard.SetText(sql);
+            }
+            catch(Exception ex ) {
+                MessageBox.Show(ex.Message, "ClownFish.FiddlerPulgin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
     }
 }

@@ -190,8 +190,13 @@ namespace ClownFish.FiddlerPulgin
 			
 
 			string xml = ClownFish.Base.Xml.XmlHelper.XmlSerialize(list, Encoding.UTF8);
-			Clipboard.SetText(xml);
-		}
+            try {
+                Clipboard.SetText(xml);
+            }
+            catch( Exception ex ) {
+                MessageBox.Show(ex.Message, "ClownFish.FiddlerPulgin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
 
 
 		private bool IsWithoutPostData(string method)
@@ -250,8 +255,13 @@ namespace ClownFish.FiddlerPulgin
 				sb.AppendLine(postData).AppendLine("\r\n");
 			}
 
-			Clipboard.SetText(sb.ToString());
-		}
+            try {
+                Clipboard.SetText(sb.ToString());
+            }
+            catch( Exception ex ) {
+                MessageBox.Show(ex.Message, "ClownFish.FiddlerPulgin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
 
 
 		/// <summary>
